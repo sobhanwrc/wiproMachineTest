@@ -19,11 +19,11 @@ Hi,
  API docs URL - https://documenter.getpostman.com/view/12923340/TVRd8WHj#f6da7397-6ada-4a12-9b2b-5d73fc623a03
  
  
- #Setup
+ # Setup Project
  1. Clone the repo
  2. After download go to project folder and run this command- npm install and after that npm start
  
- #Mongo db
+ # Mongo db setup and dump data upload
  1. Install mongo DB community Server - https://www.mongodb.com/try/download/community
  2. Install mongo DB tool - https://www.mongodb.com/try/download/database-tools
  3. Go to mongo db server folder - "C:\Program Files\MongoDB\Server\4.0\bin" (4.0 it's vary on downloaded version)
