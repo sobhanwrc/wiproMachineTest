@@ -1,6 +1,6 @@
 # Project details and set up information
 Hi,
-  I have created a simple CRUD application with Node Js, MongoDB as database and JWT for authorization. Also used RBAC(Role-based access control) for role based access by user. 
+  I have created a simple CRUD application with Node Js, MongoDB as database and JWT for authorization follow ES6 of javascript. Also used RBAC(Role-based access control) for role based access by user. 
   
   I have used 3 static role here. 
   1. basic - only read and update self record
