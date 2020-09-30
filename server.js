@@ -1,7 +1,7 @@
 import express from "express"
 import http from "http"
+import jwt from "jsonwebtoken"
 import mongoose from "mongoose"
-import path from "path"
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import User from "./schema/userModel"
@@ -46,8 +46,8 @@ app.use(bodyParser.json())
 
 //#region token expiration checking
 app.use(async (req, res, next) => {
-  if (req.headers["x-access-token"]) {
-   const accessToken = req.headers["x-access-token"];
+  if (req.headers["authorization"]) {
+   const accessToken = req.headers["authorization"];
    const { userId, exp } = await jwt.verify(accessToken, process.env.JWT_SECRET);
    // Check if token has expired
    if (exp < Date.now().valueOf() / 1000) { 

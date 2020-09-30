@@ -1,8 +1,9 @@
-const User = require('../schema/userModel');
-const ac = require("accesscontrol");
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { roles } = require('../roles')
+import User from "../schema/userModel"
+import jwt from "jsonwebtoken"
+import bcrypt from 'bcryptjs'
+import { roles } from "../roles"
+
+require('dotenv').config()
  
 async function hashPassword(password) {
  return await bcrypt.hash(password, 10);
@@ -13,48 +14,88 @@ async function validatePassword(plainPassword, hashedPassword) {
 }
  
 exports.signup = async (req, res, next) => {
- try {
-  const { email, password, role } = req.body
-  const hashedPassword = await hashPassword(password);
-  const newUser = new User({ email, password: hashedPassword, role: role || "basic" });
-  const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-   expiresIn: "1d"
-  });
-  newUser.accessToken = accessToken;
-  await newUser.save();
-  res.json({
-   data: newUser,
-   accessToken
-  })
- } catch (error) {
-  next(error)
- }
+    try {
+        const { email, password, role } = req.body
+
+        //#region checking duplicate
+        const isExist = await User.findOne({email})
+        if(isExist){
+            return res.status(412).send({
+                error: {
+                    message: 'Email is already exist.'
+                }
+            });
+        }
+        //#endregion
+        
+        /**Hash user password */
+        const hashedPassword = await hashPassword(password);
+
+        /**save new user */
+        const newUser = new User({ email, password: hashedPassword, role: role});
+        await newUser.save();
+        
+        /**Generate JWT access toke  */
+        const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d"
+        });
+
+        /**generate response object */
+        let respObj = {
+            userId : newUser._id,
+            name : null,
+            email : newUser.email,
+            role : newUser.role
+        }
+
+        return res.status(200).send({
+            message : "User has been successfully created.",
+            data: respObj,
+            accessToken
+        })
+    } catch (error) {
+        next(error)
+    }
 }
 
 exports.login = async (req, res, next) => {
     try {
-     const { email, password } = req.body;
-     const user = await User.findOne({ email });
-     if (!user) return next(new Error('Email does not exist'));
-     const validPassword = await validatePassword(password, user.password);
-     if (!validPassword) return next(new Error('Password is not correct'))
-     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-     });
-     await User.findByIdAndUpdate(user._id, { accessToken })
-     res.status(200).json({
-      data: { email: user.email, role: user.role },
-      accessToken
-     })
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) 
+            return res.status(200).send({
+                message: 'Email does not exist.',
+                data : {},
+                accessToken : ''
+            });
+
+        const validPassword = await validatePassword(password, user.password);
+        if (!validPassword) 
+            return res.status(200).send({
+                message: 'Password is not correct.',
+                data : {},
+                accessToken : ''
+            });
+
+        const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d"
+        });
+        
+        res.status(200).json({
+            message : "You have logged in successfully.",
+            data: { userId : user._id, name : user.name, email: user.email, role: user.role },
+            accessToken
+        })
     } catch (error) {
-     next(error);
+        next(error);
     }
 }
 
 exports.getUsers = async (req, res, next) => {
     const users = await User.find({});
     res.status(200).json({
-     data: users
+        data: users
     });
    }
     
@@ -107,7 +148,7 @@ exports.grantAccess = function(action, resource) {
         try {
             //get all roles using promise
             const getAllRoles = await new Promise((resolve, reject) =>
-            resolve(roles)
+                resolve(roles)
             )
             //end
 
@@ -127,18 +168,4 @@ exports.grantAccess = function(action, resource) {
             next(error)
         }
     }
-}
-    
-exports.allowIfLoggedIn = async (req, res, next) => {
-    try {
-     const user = res.locals.loggedInUser;
-     if (!user)
-      return res.status(401).json({
-       error: "You need to be logged in to access this route"
-      });
-      req.user = user;
-      next();
-     } catch (error) {
-      next(error);
-     }
 }

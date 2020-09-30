@@ -1,6 +1,6 @@
-const AccessControl = require("accesscontrol");
-const Role = require('./schema/role');
-const _ = require("lodash")
+import AccessControl from "accesscontrol"
+import Role from "./schema/role"
+import _ from "lodash"
  
 exports.roles = (async function() {
     //#region test with dynamic data from DB
