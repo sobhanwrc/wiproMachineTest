@@ -114,34 +114,72 @@ exports.getUser = async (req, res, next) => {
     
 exports.updateUser = async (req, res, next) => {
     try {
-     const update = req.body
-     const userId = req.params.userId;
-     await User.findByIdAndUpdate(userId, update);
+        const update = req.body
+        const userId = req.params.userId;
+        await User.findByIdAndUpdate(userId, update);
 
-     const user = await User.findById(userId)
-     
-     res.status(200).json({
-      data: user,
-      message: 'User has been updated'
-     });
+        const user = await User.findById(userId)
+        
+        res.status(200).json({
+            data: user,
+            message: 'User has been updated'
+        });
     } catch (error) {
-     next(error)
+        next(error)
     }
 }
     
 exports.deleteUser = async (req, res, next) => {
     try {
-     const userId = req.params.userId;
-     await User.findByIdAndDelete(userId);
-     res.status(200).json({
-      data: null,
-      message: 'User has been deleted'
-     });
+        const userId = req.params.userId;
+        const deletedResp = await User.findByIdAndDelete(userId)
+        
+        if(deletedResp)
+            return res.status(200).json({
+                data: null,
+                message: 'User has been deleted successfully.'
+            });
+        
+        return res.status(200).send({
+            message: 'No user found.',
+            data : null,
+        });
     } catch (error) {
-     next(error)
+        next(error)
     }
 }
 
+exports.viewProfile = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId)
+        
+        res.status(200).json({
+            data: user,
+            message: 'Profile info fetched successfully.'
+        });
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const update = req.body
+        const userId = req.user._id;
+        await User.findByIdAndUpdate(userId, update);
+
+        const user = await User.findById(userId)
+        
+        res.status(200).json({
+            data: user,
+            message: 'Your profile has been updated successfully.'
+        });
+    } catch (error) {
+        next(error)
+    }
+}
 
 exports.grantAccess = function(action, resource) {
     return async (req, res, next) => {

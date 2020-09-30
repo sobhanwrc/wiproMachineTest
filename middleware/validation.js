@@ -1,3 +1,5 @@
+import mongoose from "mongoose"
+
 module.exports = {
     signUpValidation : async (req, res, next) => {
         if(Object.keys(req.body).length === 0){
@@ -51,5 +53,47 @@ module.exports = {
         }else {
             next();
         } 
+    },
+
+    updateAnyUserValidation : async (req, res, next) => {
+        if(!req.params.userId){
+            return res.status(400).send({
+                error: {
+                    message: 'userId is missing.'
+                }
+            });
+        }
+
+        const checkObjId = mongoose.isValidObjectId(req.params.userId)
+        if(checkObjId !== true){
+            return res.status(400).send({
+                error: {
+                    message: 'Valid objectId required.'
+                }
+            });
+        }
+
+        next();
+    },
+
+    deleteAnyUserValidation : async (req, res, next) => {
+        if(!req.params.userId){
+            return res.status(400).send({
+                error: {
+                    message: 'userId is missing.'
+                }
+            });
+        }
+
+        const checkObjId = mongoose.isValidObjectId(req.params.userId)
+        if(checkObjId !== true){
+            return res.status(400).send({
+                error: {
+                    message: 'Valid objectId required.'
+                }
+            });
+        }
+
+        next();
     }
 }
