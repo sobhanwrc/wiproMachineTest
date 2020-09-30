@@ -93,7 +93,7 @@ exports.login = async (req, res, next) => {
 }
 
 exports.getUsers = async (req, res, next) => {
-    const users = await User.find({});
+    const users = await User.find({}).sort({_id : -1});
     res.status(200).json({
         data: users
     });
@@ -133,7 +133,7 @@ exports.deleteUser = async (req, res, next) => {
     try {
         const userId = req.params.userId;
         const deletedResp = await User.findByIdAndDelete(userId)
-        
+
         if(deletedResp)
             return res.status(200).json({
                 data: null,
@@ -191,8 +191,6 @@ exports.grantAccess = function(action, resource) {
             //end
 
             const permission = getAllRoles.can(req.user.role)[action](resource);
-            
-            console.log(permission,'perm')
 
             if (!permission.granted) {
                 return res.status(401).json({
