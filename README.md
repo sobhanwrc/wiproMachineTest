@@ -19,3 +19,15 @@ Hi,
  API docs URL - https://documenter.getpostman.com/view/12923340/TVRd8WHj#f6da7397-6ada-4a12-9b2b-5d73fc623a03
  
  
+ #Setup
+ 1. Clone the repo
+ 2. After download go to project folder and run this command- npm install and after that npm start
+ 
+ #Mongo db
+ 1. Install mongo DB community Server - https://www.mongodb.com/try/download/community
+ 2. Install mongo DB tool - https://www.mongodb.com/try/download/database-tools
+ 3. Go to mongo db server folder - "C:\Program Files\MongoDB\Server\4.0\bin" (4.0 it's vary on downloaded version)
+ 4. Cut the "dump" folder from project repo and paste it in this location "C:\Program Files\MongoDB\Server\4.2\bin\"
+ 5. Open CMD as Administrator and run the command for upload db dump - "mongorestore --host localhost --port 27017 --db wipro_machine_test  dump/wipro_machine_test"
+ 
+ 
